@@ -2,6 +2,7 @@ import { Post } from './post.model';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
 import { Subject } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class PostsService {
@@ -13,10 +14,19 @@ export class PostsService {
     }
 
     getPosts() {
-        this.http.get<{ message: string, results: Post[] }>('http://localhost:3000/api/posts').subscribe((postData) => {
-            this.posts = postData.results;
-            this.postsUpdated.next([...this.posts]);
-        });
+        this.http.get<{ message: string, results: any }>('http://localhost:3000/api/posts')
+            .pipe(map((postData) => {
+                return postData.results.map(post => {
+                    return {
+                        id: post._id,
+                        title: post.title,
+                        content: post.content
+                    };
+                });
+            })).subscribe(transformedPosts => {
+                this.posts = transformedPosts;
+                this.postsUpdated.next([...this.posts]);
+            });
 
     }
 
@@ -25,10 +35,22 @@ export class PostsService {
     }
 
     addPost(post: Post) {
-        this.http.post<{ message: string }>('http://localhost:3000/api/posts', post).subscribe((data) => {
+        this.http.post<{ message: string, postId: string }>('http://localhost:3000/api/posts', post).subscribe(data => {
             console.log(data.message);
+            const postId = data.postId;
+            post.id = postId;
             this.posts.push(post);
             this.postsUpdated.next([...this.posts]);
         });
     }
+
+    deletePost(postId: string) {
+        console.log(postId);
+        this.http.delete(`http://localhost:3000/api/posts/${postId}`).subscribe(() => {
+            const updatedPosts = this.posts.filter(post => post.id !== postId)
+            this.posts = updatedPosts;
+            this.postsUpdated.next([...this.posts]);
+        });
+    }
+
 }

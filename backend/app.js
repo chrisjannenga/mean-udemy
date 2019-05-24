@@ -1,7 +1,21 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+
+const Post = require('./models/post')
+
+// Mongo user password 
 
 const app = express();
+
+mongoose.connect('mongodb+srv://appUser:Qzg41Zmfksa5jtkK@alpha-d7jqe.mongodb.net/node-angular?retryWrites=true', {
+    useNewUrlParser: true 
+})
+.then(() => {
+    console.log("Connected to MongoDB Atlas")
+}). catch(() => {
+    console.log("Failed to connect to MongoDB Atlas")
+});
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : false}));
@@ -13,25 +27,40 @@ app.use((req, res, next) => {
     next();
 });
 
-
-
 app.get('/api/posts', (req, res, next) => {
-    const posts = [
-        { id: '01', title: 'First Post from the server', content: 'This is coming from the server' },
-        { id: '02', title: 'Second post from the server', content: 'This is coming from the server, also.' }
-    ]
-    return res.status(200).json({
-        message: 'Posts sent successfully',
-        results: posts
+    Post.find().then(documents => {
+        return res.status(200).json({
+          message: 'Posts sent successfully',
+          results: documents
+        });
     });
+    
 })
 
 app.post('/api/posts', (req, res, next) => {
-  const post = req.body;
+  const post = new Post({
+      title: req.body.title,
+      content: req.body.content
+  });
+  post.save().then(createdPost => {
+    res.status(201).json({
+      message: 'Post was added successfully!',
+      postId: createdPost._id
+    })
+  });
   console.log(post);
-  res.status(201).json({
-    message: 'Post was added successfully!'
-  })
+  
+  
+})
+
+app.delete('/api/posts/:id', (req, res, next) => {
+    Post.deleteOne({ _id: req.params.id}).then(() => {
+        res.status(200).json({
+          message: `Post with id:${req.params.id} was deleted.`
+        })
+    }).catch(() => {
+        
+    })
 })
 
 module.exports = app;
