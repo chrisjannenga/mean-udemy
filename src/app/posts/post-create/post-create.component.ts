@@ -11,5 +11,10 @@ export class PostCreateComponent implements OnInit {
 
   ngOnInit() {
   }
+  enteredValue:string = ""
+  newPost: string = "";
 
+  onAddPost(){
+    this.newPost = this.enteredValue;
+  }
 }
