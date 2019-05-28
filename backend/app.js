@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 
 const Post = require('./models/post')
 
-// Mongo user password 
 
 const app = express();
 

@@ -3,13 +3,15 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
 import { Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { NotifierService } from 'angular-notifier';
 
 @Injectable({ providedIn: 'root' })
 export class PostsService {
     private posts: Post[] = [];
     private postsUpdated = new Subject<Post[]>();
 
-    constructor(private http: HttpClient) {
+    constructor(private http: HttpClient,
+                private notifier: NotifierService) {
 
     }
 
@@ -41,6 +43,7 @@ export class PostsService {
             post.id = postId;
             this.posts.push(post);
             this.postsUpdated.next([...this.posts]);
+            this.notifier.notify('success', 'Your post was added!')
         });
     }
 
@@ -50,6 +53,7 @@ export class PostsService {
             const updatedPosts = this.posts.filter(post => post.id !== postId)
             this.posts = updatedPosts;
             this.postsUpdated.next([...this.posts]);
+            this.notifier.notify('error', 'Your post was deleted!')
         });
     }
 
