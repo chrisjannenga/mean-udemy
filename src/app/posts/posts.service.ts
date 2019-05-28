@@ -1,9 +1,11 @@
 import { Post } from './post.model';
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http'
+import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { NotifierService } from 'angular-notifier';
+import { Router } from '@angular/router';
+
 
 @Injectable({ providedIn: 'root' })
 export class PostsService {
@@ -11,7 +13,8 @@ export class PostsService {
     private postsUpdated = new Subject<Post[]>();
 
     constructor(private http: HttpClient,
-                private notifier: NotifierService) {
+                private notifier: NotifierService,
+                private router: Router) {
 
     }
 
@@ -43,18 +46,34 @@ export class PostsService {
             post.id = postId;
             this.posts.push(post);
             this.postsUpdated.next([...this.posts]);
-            this.notifier.notify('success', 'Your post was added!')
+            this.router.navigate(['/']);
+            this.notifier.notify('success', 'Your post was added!');
+        });
+    }
+
+    updatePost(id: string, post: Post) {
+        this.http.put(`http://localhost:3000/api/posts/${id}`, post).subscribe(response => {
+            const updatedPosts = [...this.posts];
+            const oldPostIndex = updatedPosts.findIndex(p => p.id === post.id);
+            updatedPosts[oldPostIndex] = post;
+            this.posts = updatedPosts;
+            this.postsUpdated.next([...this.posts]);
+            this.router.navigate(['/']);
         });
     }
 
     deletePost(postId: string) {
         console.log(postId);
         this.http.delete(`http://localhost:3000/api/posts/${postId}`).subscribe(() => {
-            const updatedPosts = this.posts.filter(post => post.id !== postId)
+            const updatedPosts = this.posts.filter(post => post.id !== postId);
             this.posts = updatedPosts;
             this.postsUpdated.next([...this.posts]);
-            this.notifier.notify('error', 'Your post was deleted!')
+            this.notifier.notify('error', 'Your post was deleted!');
         });
+    }
+
+    getPost(id: string) {
+        return this.http.get<{_id: string, title: string, content: string}>(`http://localhost:3000/api/posts/${id}`);
     }
 
 }
