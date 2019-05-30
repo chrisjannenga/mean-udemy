@@ -11,10 +11,11 @@ const userRoutes = require('./routes/user');
 const app = express();
 
 mongoose.connect('mongodb+srv://appUser:Qzg41Zmfksa5jtkK@alpha-d7jqe.mongodb.net/node-angular?retryWrites=true', {
-    useNewUrlParser: true 
+    useNewUrlParser: true,
+    useCreateIndex: true
 })
 .then(() => {
-    console.log("Connected to MongoDB Atlas")
+    console.log("Connected to Atlas")
 }). catch(() => {
     console.log("Failed to connect to MongoDB Atlas")
 });
