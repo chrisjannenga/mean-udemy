@@ -6,13 +6,16 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
+The Backend Node server also needs to be started with `npm run server`. The Angular app will not function without this.
+
 ## Code scaffolding
 
 Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+Run `ng build` to build the project. The build artifacts will be stored in the `backend/angular` directory. Use the `--prod` flag for a production build.
+This can be deployed to Elastic Beanstalk by zipping the contents of the `backend` folder and uploading them to the zip. 
 
 ## Running unit tests
 
