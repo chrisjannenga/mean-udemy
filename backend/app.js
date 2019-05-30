@@ -10,7 +10,7 @@ const userRoutes = require('./routes/user');
 
 const app = express();
 
-mongoose.connect('mongodb+srv://appUser:Qzg41Zmfksa5jtkK@alpha-d7jqe.mongodb.net/node-angular?retryWrites=true', {
+mongoose.connect(`mongodb+srv://appUser:${process.env.MONGO_ATLAS_PASSWORD}@alpha-d7jqe.mongodb.net/node-angular?retryWrites=true`, {
     useNewUrlParser: true,
     useCreateIndex: true
 })
